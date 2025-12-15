@@ -5,25 +5,25 @@ server_economy = {
     'Steve': 0,
     'Alex': 150
 }
+
 gift_text = {
-    "money_loser": "Чомусь ти мало отримав монет, напевно твій дід мороз купив оперативну пам'ять для свого ПК",
-    "money_winner": "Вау! Тобі дуже пощастило, ти отримав багато монет, напевно твій дід мороз багато заробляє"
+    "money_loser": "You got very little money, maybe Santa bought RAM for his PC.",
+    "money_winner": "Wow! You are very lucky, you got a lot of money! Maybe Santa is rich."
 }
 
-print("---  MineBank Console v1.0  ---")
-print("Доступні команди:")
-print("  !reg [нік]              - Зареєструвати нового гравця (+100 монет)")
-print("  !balance [нік]          - Перевірити баланс гравця")
-print("  !give [нік] [сума]      - (Admin) Видати гроші гравцю")
-print("  !pay [хто] [кому] [сума]- Переказ грошей між гравцями")
-print("  !top                    - Показати всіх гравців")
-print("  !gift [нік]             - Отримати випадковий подарунок (100-1000 монет)")
-print("  !exit                   - Вийти з консолі")
+print("--- MineBank Console v1.0 ---")
+print("Available commands:")
+print("  !reg [nick]              - Register a new player (+100 coins)")
+print("  !balance [nick]          - Check player balance")
+print("  !give [nick] [amount]    - (Admin) Give money to player")
+print("  !pay [sender] [to] [amt] - Transfer money between players")
+print("  !top                     - Show all players")
+print("  !gift [nick]             - Get a random gift (100-1000 coins)")
+print("  !exit                    - Exit console")
 print("--------------------------------------")
 
 while True:
-    user_input = input("\nВведіть команду: ").strip()
-
+    user_input = input("\nEnter command: ").strip()
 
     parts = user_input.split()
 
@@ -37,23 +37,23 @@ while True:
             nickname = parts[1]
 
             if nickname in server_economy:
-                print(f" Помилка: Гравець {nickname} вже існує!")
+                print(f" Error: Player {nickname} already exists!")
             else:
                 server_economy[nickname] = 100
-                print(f" Успіх: Гравець {nickname} зареєстрований! Баланс: 100")
+                print(f" Success: Player {nickname} registered! Balance: 100")
         else:
-            print(" Використання: !reg [нікнейм]")
+            print(" Usage: !reg [nickname]")
 
     elif command == '!balance' or command == '!bal':
         if len(parts) > 1:
             nickname = parts[1]
             if nickname in server_economy:
                 balance = server_economy[nickname]
-                print(f" Баланс гравця {nickname}: {balance} монет")
+                print(f" Player {nickname} balance: {balance} coins")
             else:
-                print(f" Помилка: Гравця {nickname} не знайдено.")
+                print(f" Error: Player {nickname} not found.")
         else:
-            print("Використання: !balance [нікнейм]")
+            print("Usage: !balance [nickname]")
 
     elif command == '!give':
         if len(parts) > 2:
@@ -65,13 +65,13 @@ while True:
 
                 if nickname in server_economy:
                     server_economy[nickname] += amount
-                    print(f"Адмін видав {amount} монет гравцю {nickname}.")
+                    print(f"Admin gave {amount} coins to {nickname}.")
                 else:
-                    print(f" Гравець {nickname} не знайдений.")
+                    print(f" Player {nickname} not found.")
             else:
-                print("Сума має бути числом!")
+                print("Amount must be a number!")
         else:
-            print(" Використання: !give [нік] [сума]")
+            print(" Usage: !give [nick] [amount]")
 
     elif command == '!pay':
         if len(parts) > 3:
@@ -80,48 +80,50 @@ while True:
             amount_str = parts[3]
 
             if amount_str.isdigit():
-
                 amount = int(amount_str)
 
                 if sender in server_economy and receiver in server_economy:
                     if server_economy[sender] >= amount:
                         server_economy[sender] -= amount
                         server_economy[receiver] += amount
-                        print(f" {sender} переказав {amount} монет гравцю {receiver}.")
-                        print(f"Новий баланс {sender}: {server_economy[sender]}")
-                        print(f"Новий баланс {receiver}: {server_economy[receiver]}")
+                        print(f" {sender} transferred {amount} coins to {receiver}.")
+                        print(f"New balance {sender}: {server_economy[sender]}")
+                        print(f"New balance {receiver}: {server_economy[receiver]}")
                     else:
-                        print(f" У {sender} недостатньо грошей!")
+                        print(f" {sender} does not have enough money!")
                 else:
-                    print(" Обидва гравці повинні бути зареєстровані!")
+                    print(" Both players must be registered!")
             else:
-                print("Сума має бути числом!")
+                print("Amount must be a number!")
         else:
-            print("Використання: !pay [від_кого] [кому] [сума]")
+            print("Usage: !pay [sender] [receiver] [amount]")
 
     elif command == '!top':
-        print("\n=== СПИСОК ГРАВЦІВ ===")
+        print("\n=== PLAYER LIST ===")
         for name, money in server_economy.items():
             print(f"- {name}: {money} $")
-        print("=========================")
+        print("======================")
+
     elif command == '!gift':
         if len(parts) > 1:
             nickname = parts[1]
             if nickname in server_economy:
                 gift_amount = random.randint(100, 1000)
                 server_economy[nickname] += gift_amount
+                
                 if gift_amount < 500:
                     print(gift_text["money_loser"])
                 else:
                     print(gift_text["money_winner"])
-                print(f"Гравець {nickname} отримав подарунок: {gift_amount} монет! Новий баланс: {server_economy[nickname]}")
+                
+                print(f"Player {nickname} received a gift: {gift_amount} coins! New balance: {server_economy[nickname]}")
             else:
-                print(f"Помилка: Гравця {nickname} не знайдено.")
+                print(f"Error: Player {nickname} not found.")
         else:
-            print("Використання: !gift [нікнейм]")
+            print("Usage: !gift [nickname]")
 
     elif command == '!exit':
-        print("Роботу завершено. До побачення!")
+        print("Shutting down. Goodbye!")
         break
     else:
-        print(f"Невідома команда: {command}")
+        print(f"Unknown command: {command}")
